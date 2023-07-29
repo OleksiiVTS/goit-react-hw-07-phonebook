@@ -5,18 +5,12 @@ import ContactForm from './ContactForm/ContactForm';
 import ContactList from './ContactList/ContactList';
 import Filter from './Filter/Filter';
 import { useContacts } from 'redux/useContacts';
-
 const Phonebook = () => {
-  const { valueContacts, valueFilters, getContacts, isLoading, error } =
-    useContacts();
+  const { visibleContacts, getContacts, isLoading, error } = useContacts();
 
   useEffect(() => {
     getContacts();
   }, [getContacts]);
-
-  const visibleContacts = valueContacts.filter(contact =>
-    contact.name.toLowerCase().includes(valueFilters.toLowerCase())
-  );
 
   return (
     <div className={css.appDiv}>

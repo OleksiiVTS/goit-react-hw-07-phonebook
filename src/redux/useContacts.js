@@ -2,8 +2,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   selectContacts,
   selectFilters,
-  getIsLoading,
-  getError,
+  selectIsLoading,
+  selectError,
+  selectVisibleContacts,
 } from './selectors';
 import { getApi, addContact, deleteContact } from './operations';
 import { setStatusFilter } from './filtersSlice';
@@ -11,10 +12,11 @@ import { useCallback } from 'react';
 
 export const useContacts = () => {
   const dispatch = useDispatch();
-  const isLoading = useSelector(getIsLoading);
-  const error = useSelector(getError);
+  const isLoading = useSelector(selectIsLoading);
+  const error = useSelector(selectError);
   const valueContacts = useSelector(selectContacts);
   const valueFilters = useSelector(selectFilters);
+  const visibleContacts = useSelector(selectVisibleContacts);
 
   const getContacts = useCallback(() => dispatch(getApi()), [dispatch]);
 
@@ -35,6 +37,7 @@ export const useContacts = () => {
     error,
     valueContacts,
     valueFilters,
+    visibleContacts,
     addContacts,
     deleteContacts,
     filterContact,

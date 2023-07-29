@@ -3,13 +3,13 @@ import React from 'react';
 import { useContacts } from 'redux/useContacts';
 
 const ContactItem = ({ id, name, number }) => {
-  const { deleteContact } = useContacts();
+  const { deleteContacts } = useContacts();
   return (
     <>
       <p>
         {name}: {number}
       </p>
-      <button type="button" onClick={() => deleteContact(id)}>
+      <button type="button" onClick={() => deleteContacts(id)}>
         &times;
       </button>
     </>

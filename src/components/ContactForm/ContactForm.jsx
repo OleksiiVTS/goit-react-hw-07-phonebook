@@ -3,7 +3,7 @@ import css from './ContactForm.module.css';
 import { useContacts } from 'redux/useContacts';
 
 const ContactForm = () => {
-  const { valueContacts, addContact } = useContacts();
+  const { valueContacts, addContacts } = useContacts();
 
   const handleSubmit = evt => {
     evt.preventDefault();
@@ -16,7 +16,7 @@ const ContactForm = () => {
       alert(`${name} is already in contacts!`);
       return;
     }
-    addContact({ name, number });
+    addContacts({ name, number });
 
     evt.target.reset();
   };

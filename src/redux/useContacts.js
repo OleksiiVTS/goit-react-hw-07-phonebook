@@ -1,20 +1,29 @@
 import { useDispatch, useSelector } from 'react-redux';
-import { selectContacts, selectFilters } from './selectors';
-
-import * as actions from 'redux/contactsSlice';
+import {
+  selectContacts,
+  selectFilters,
+  getIsLoading,
+  getError,
+} from './selectors';
+import { getApi, addContact, deleteContact } from './operations';
 import { setStatusFilter } from './filtersSlice';
+import { useCallback } from 'react';
 
 export const useContacts = () => {
   const dispatch = useDispatch();
+  const isLoading = useSelector(getIsLoading);
+  const error = useSelector(getError);
   const valueContacts = useSelector(selectContacts);
   const valueFilters = useSelector(selectFilters);
 
-  const addContact = newContact => {
-    dispatch(actions.addContacts(newContact));
+  const getContacts = useCallback(() => dispatch(getApi()), [dispatch]);
+
+  const addContacts = newContact => {
+    dispatch(addContact(newContact));
   };
 
-  const deleteContact = id => {
-    dispatch(actions.deleteContacts(id));
+  const deleteContacts = id => {
+    dispatch(deleteContact(id));
   };
 
   const filterContact = updatedTodo => {
@@ -22,10 +31,13 @@ export const useContacts = () => {
   };
 
   return {
+    isLoading,
+    error,
     valueContacts,
     valueFilters,
-    addContact,
-    deleteContact,
+    addContacts,
+    deleteContacts,
     filterContact,
+    getContacts,
   };
 };

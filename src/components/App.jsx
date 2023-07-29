@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useEffect } from 'react';
+import { Circles } from 'react-loader-spinner';
 import css from './App.module.css';
 import ContactForm from './ContactForm/ContactForm';
 import ContactList from './ContactList/ContactList';
@@ -6,15 +7,16 @@ import Filter from './Filter/Filter';
 import { useContacts } from 'redux/useContacts';
 
 const Phonebook = () => {
-  const { valueContacts, valueFilters } = useContacts();
+  const { valueContacts, valueFilters, getContacts, isLoading, error } =
+    useContacts();
 
-  const getVisibleContacts = () => {
-    return valueContacts.filter(contact =>
-      contact.name.toLowerCase().includes(valueFilters.toLowerCase())
-    );
-  };
+  useEffect(() => {
+    getContacts();
+  }, [getContacts]);
 
-  const visibleContacts = getVisibleContacts();
+  const visibleContacts = valueContacts.filter(contact =>
+    contact.name.toLowerCase().includes(valueFilters.toLowerCase())
+  );
 
   return (
     <div className={css.appDiv}>
@@ -25,6 +27,14 @@ const Phonebook = () => {
       <section>
         <h2>Contacts</h2>
         <Filter />
+        {isLoading && !error && (
+          <Circles
+            height="80"
+            width="80"
+            color="#4d78a9"
+            wrapperClass={css.loader}
+          />
+        )}
         {visibleContacts.length > 0 && (
           <ContactList listContacts={visibleContacts} />
         )}

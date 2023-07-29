@@ -1,7 +1,5 @@
-import { createSlice, nanoid } from '@reduxjs/toolkit';
-import persistReducer from 'redux-persist/es/persistReducer';
-import storage from 'redux-persist/lib/storage';
-
+import { createSlice } from '@reduxjs/toolkit';
+import { getApi, addContact, deleteContact } from './operations';
 export const contactsSlice = createSlice({
   name: 'contacts',
   initialState: {
@@ -9,50 +7,49 @@ export const contactsSlice = createSlice({
     isLoading: false,
     error: null,
   },
-  reducers: {
-    addContacts: {
-      reducer(state, action) {
-        state.dataContacts.push(action.payload);
-      },
-      prepare(contact) {
-        return {
-          payload: {
-            id: nanoid(),
-            ...contact,
-          },
-        };
-      },
+  extraReducers: {
+    [getApi.pending](state, action) {
+      state.isLoading = true;
     },
-    deleteContacts(state, action) {
+    [getApi.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
+      state.dataContacts = action.payload;
+    },
+    [getApi.rejected](state, action) {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+
+    [addContact.pending](state) {
+      state.isLoading = true;
+    },
+    [addContact.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
+      state.dataContacts.push(action.payload);
+    },
+    [addContact.rejected](state, action) {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
+
+    [deleteContact.pending](state) {
+      state.isLoading = true;
+    },
+    [deleteContact.fulfilled](state, action) {
+      state.isLoading = false;
+      state.error = null;
       const index = state.dataContacts.findIndex(
-        contact => contact.id !== action.payload
+        contact => contact.id === action.payload.id
       );
       state.dataContacts.splice(index, 1);
     },
-    // // Виконається в момент старту HTTP-запиту
-    // fetchingInProgress(state) {
-    //   state.isLoading = true;
-    // },
-    // // Виконається якщо HTTP-запит завершився успішно
-    // fetchingSuccess(state, action) {
-    //   state.isLoading = false;
-    //   state.error = null;
-    //   state.items = action.payload;
-    // },
-    // // Виконається якщо HTTP-запит завершився з помилкою
-    // fetchingError(state, action) {
-    //   state.isLoading = false;
-    //   state.error = action.payload;
-    // },
+    [deleteContact.rejected](state, action) {
+      state.isLoading = false;
+      state.error = action.payload;
+    },
   },
 });
 
-export const { addContacts, deleteContacts } = contactsSlice.actions;
-export const contactsReducer = persistReducer(
-  {
-    key: 'ist_contacts',
-    storage,
-    blacklist: ['filters'],
-  },
-  contactsSlice.reducer
-);
+export const contactsReducer = contactsSlice.reducer;

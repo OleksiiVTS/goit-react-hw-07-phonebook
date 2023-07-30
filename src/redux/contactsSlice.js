@@ -7,48 +7,39 @@ export const contactsSlice = createSlice({
     isLoading: false,
     error: null,
   },
-  extraReducers: {
-    [getApi.pending](state, action) {
-      state.isLoading = true;
-    },
-    [getApi.fulfilled](state, action) {
-      state.isLoading = false;
-      state.error = null;
-      state.dataContacts = action.payload;
-    },
-    [getApi.rejected](state, action) {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
-
-    [addContact.pending](state) {
-      state.isLoading = true;
-    },
-    [addContact.fulfilled](state, action) {
-      state.isLoading = false;
-      state.error = null;
-      state.dataContacts.push(action.payload);
-    },
-    [addContact.rejected](state, action) {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
-
-    [deleteContact.pending](state) {
-      state.isLoading = true;
-    },
-    [deleteContact.fulfilled](state, action) {
-      state.isLoading = false;
-      state.error = null;
-      const index = state.dataContacts.findIndex(
-        contact => contact.id === action.payload.id
+  extraReducers: builder => {
+    builder
+      .addCase(
+        (getApi.pending, addContact.pending, deleteContact.pending),
+        (state, action) => {
+          state.isLoading = true;
+        }
+      )
+      .addCase(getApi.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        state.dataContacts = action.payload;
+      })
+      .addCase(addContact.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        state.dataContacts.push(action.payload);
+      })
+      .addCase(deleteContact.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.error = null;
+        const index = state.dataContacts.findIndex(
+          contact => contact.id === action.payload.id
+        );
+        state.dataContacts.splice(index, 1);
+      })
+      .addCase(
+        (getApi.rejected, addContact.rejected, deleteContact.rejected),
+        (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        }
       );
-      state.dataContacts.splice(index, 1);
-    },
-    [deleteContact.rejected](state, action) {
-      state.isLoading = false;
-      state.error = action.payload;
-    },
   },
 });
 

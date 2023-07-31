@@ -21,14 +21,14 @@ export const contactsSlice = createSlice({
         );
         state.dataContacts.splice(index, 1);
       })
-      .addMatcher(isAnyOf(getActions('pending')), (state, action) => {
+      .addMatcher(isAnyOf(getActions('pending')), state => {
         state.isLoading = true;
       })
       .addMatcher(isAnyOf(getActions('rejected')), (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       })
-      .addMatcher(isAnyOf(getActions('fulfilled')), (state, action) => {
+      .addMatcher(isAnyOf(getActions('fulfilled')), state => {
         state.isLoading = false;
         state.error = null;
       });

@@ -1,4 +1,10 @@
-import { createSlice, isAnyOf } from '@reduxjs/toolkit';
+import {
+  createSlice,
+  isAnyOf,
+  isFulfilled,
+  isPending,
+  isRejected,
+} from '@reduxjs/toolkit';
 import { getApi, addContact, deleteContact } from './operations';
 export const contactsSlice = createSlice({
   name: 'contacts',
@@ -21,21 +27,30 @@ export const contactsSlice = createSlice({
         );
         state.dataContacts.splice(index, 1);
       })
-      .addMatcher(isAnyOf(getActions('pending')), state => {
-        state.isLoading = true;
-      })
-      .addMatcher(isAnyOf(getActions('rejected')), (state, action) => {
-        state.isLoading = false;
-        state.error = action.payload;
-      })
-      .addMatcher(isAnyOf(getActions('fulfilled')), state => {
-        state.isLoading = false;
-        state.error = null;
-      });
+      .addMatcher(
+        isAnyOf(isPending(getApi, addContact, deleteContact)),
+        state => {
+          state.isLoading = true;
+        }
+      )
+      .addMatcher(
+        isAnyOf(isRejected(getApi, addContact, deleteContact)),
+        (state, action) => {
+          state.isLoading = false;
+          state.error = action.payload;
+        }
+      )
+      .addMatcher(
+        isAnyOf(isFulfilled(getApi, addContact, deleteContact)),
+        state => {
+          state.isLoading = false;
+          state.error = null;
+        }
+      );
   },
 });
 
-const extraActions = [getApi, addContact, deleteContact];
-const getActions = type => isAnyOf(...extraActions.map(action => action[type]));
+// const extraActions = [getApi, addContact, deleteContact];
+// const getActions = type => isAnyOf(...extraActions.map(action => action[type]));
 
 export const contactsReducer = contactsSlice.reducer;
